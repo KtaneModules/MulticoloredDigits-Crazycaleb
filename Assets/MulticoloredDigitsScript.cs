@@ -298,6 +298,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
 
     string tableone(string n, string c)
     {
+        int full = Int32.Parse(n.Replace('?', '0'));
         for (int i = 0; i < n.Length; i++)
         {
             if (n[i] == '?')
@@ -350,10 +351,15 @@ public class MulticoloredDigitsScript : MonoBehaviour
             else if (col == 'A')
             {
                 int sum = 0;
-                for (int j = 0; j < n.Length; j++)
+                Debug.Log("full of shit:" + full);
+                while (full != 0)
                 {
-                    sum = sum + Int32.Parse(n[i].ToString());
+                    sum = (full % 10) + sum;
+                    full = (full / 10);
+                    
                 }
+                
+
                 number = (number * sum) % 10;
             }
 
@@ -361,7 +367,9 @@ public class MulticoloredDigitsScript : MonoBehaviour
             n = n.Insert(i, number.ToString());
 
         }
+        Debug.Log("This is n: " + n);
         return n;
+        
     }
 
 
