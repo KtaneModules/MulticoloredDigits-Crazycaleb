@@ -171,7 +171,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
             beforesum = Math.Abs(beforesum) % 10;
             aftersum = Math.Abs(aftersum) % 10;
         
-            int replaceddigit = TheTable[beforesum][aftersum] % 10;
+            int replaceddigit = Math.Abs(TheTable[beforesum][aftersum] % 10);
             
             Colors[3] = Colors[3].Remove(position, 1);
             Colors[3] = Colors[3].Insert(position, "ARGYBWMCOP"[beforesum].ToString());
