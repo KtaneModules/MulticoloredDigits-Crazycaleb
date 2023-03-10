@@ -375,5 +375,99 @@ public class MulticoloredDigitsScript : MonoBehaviour
         
     }
 
+    // Twitch Plays & Autosolver by Kilo Bites
+
+    int StageIx(int ix)
+    {
+        switch (ix)
+        {
+            case 0:
+                return 3;
+            case 1:
+                return 4;
+            case 2:
+                return 5;
+            case 3:
+                return 6;
+        }
+        return -1;
+    }
+
+#pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"Use !{0} input 0123456789 to input your answer. || !{0} clear to clear your input. || !{0} submit to submit your answer.";
+#pragma warning restore 414
+
+
+    IEnumerator ProcessTwitchCommand (string command)
+    {
+        yield return null;
+
+        string[] split = command.ToUpperInvariant().Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+
+        if (split[0].EqualsIgnoreCase("INPUT"))
+        {
+            
+            if (split.Length == 1)
+            {
+                yield return "sendtochaterror Please input your numbers!";
+                yield break;
+            }
+            else if (!split[1].Any(x => "0123456789".Contains(x)))
+            {
+                yield return "sendtochaterror What you inputted doesn't contain any valid numbers!";
+                yield break;
+            }
+            else if (split[1].Length > StageIx(Stage - 1) || Display.text.Length == StageIx(Stage - 1))
+            {
+                yield return string.Format("sendtochaterror You cannot input more than {0} numbers!", StageIx(Stage - 1));
+                yield break;
+            }
+
+            var numsToPress = split[1].Select(x => "0123456789".IndexOf(x)).ToArray();
+
+            foreach (var num in numsToPress)
+            {
+                buttonage[num].OnInteract();
+                yield return new WaitForSeconds(0.1f);
+            }
+            
+            yield break;
+        }
+
+        if (split[0].EqualsIgnoreCase("CLEAR"))
+        {
+            clear.OnInteract();
+            yield return new WaitForSeconds(0.1f);
+            yield break;
+        }
+
+        if (split[0].EqualsIgnoreCase("SUBMIT"))
+        {
+            submit.OnInteract();
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+
+    IEnumerator TwitchHandleForcedSolve()
+    {
+        yield return null;
+
+        var ix = Stage - 1;
+
+        while (ix != 4)
+        {
+            var answers = answer.Select(x => "0123456789".IndexOf(x)).ToArray();
+
+            foreach (var num in answers)
+            {
+                buttonage[num].OnInteract();
+                yield return new WaitForSeconds(0.1f);
+            }
+            submit.OnInteract();
+            ix++;
+        }
+    }
+
+
 
 }
