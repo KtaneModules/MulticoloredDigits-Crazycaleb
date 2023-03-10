@@ -61,7 +61,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
 
 
 
-        Debug.Log("Stage 1's colors are " + Colors[0]);
+        Debug.LogFormat("[Multicolored Digits #{0}] Stage 1's colors are {1}", _moduleId, Colors[0]);
 
         // Stage 1 above 
 
@@ -76,7 +76,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
             DigitDisplay2[i].gameObject.SetActive(false);
         }
 
-        Debug.Log("Stage 2's colors are " + Colors[1]);
+        Debug.LogFormat("[Multicolored Digits #{0}] Stage 2's colors are {1}", _moduleId, Colors[1]);
 
         // Stage 2 above
 
@@ -93,7 +93,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
             DigitDisplay3[i].gameObject.SetActive(false);
         }
 
-        Debug.Log("Stage 3's colors are " + Colors[2]);
+        Debug.LogFormat("[Multicolored Digits #{0}] Stage 3's colors are {1}", _moduleId, Colors[2]);
 
         // Stage 3 above 
 
@@ -115,13 +115,14 @@ public class MulticoloredDigitsScript : MonoBehaviour
             DigitDisplay4[i].gameObject.SetActive(false);
         }
 
+        Debug.LogFormat("[Multicolored Digits #{0}] Stage 4's colors are {1}", _moduleId, Colors[3]);
 
         after = tableone(Num4, Colors[3]);
 
 
 
         answer = tableone(Num, Colors[0]);
-        Debug.Log(answer);
+        Debug.LogFormat("[Multicolored Digits #{0}] The answer for stage 1 is {1}.", _moduleId, answer);
 
 
     }
@@ -169,9 +170,6 @@ public class MulticoloredDigitsScript : MonoBehaviour
             
             beforesum = Math.Abs(beforesum) % 10;
             aftersum = Math.Abs(aftersum) % 10;
-
-        Debug.Log("The row is " + beforesum);
-        Debug.Log("The column is " + aftersum);
         
             int replaceddigit = TheTable[beforesum][aftersum] % 10;
             
@@ -180,9 +178,9 @@ public class MulticoloredDigitsScript : MonoBehaviour
             before = before.Remove(position, 1);
             before = before.Insert(position, replaceddigit.ToString());
 
-        Debug.Log("The ? number is " + replaceddigit);
+        Debug.LogFormat("[Multicolored Digits #{0}] The ? number is {1}.", _moduleId, replaceddigit);
 
-        Debug.Log("The color of the question mark is " + Colors[3][position]);
+        Debug.LogFormat("[Multicolored Digits #{0}] The color of the question mark is {1}", _moduleId, Colors[3][position]);
 
             return tableone(before, Colors[3]);
         
@@ -232,7 +230,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
 
                     }
                     answer = tableone(Digits[1].ToString("0000"), Colors[1]);
-                    Debug.Log(answer);
+                    Debug.LogFormat("[Multicolored Digits #{0}] The answer for stage 2 is {1}.", _moduleId, answer);
                 }
                 else if (Stage == 2)
                 {
@@ -250,7 +248,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
 
                     }
                     answer = tableone(Digits[2].ToString("00000"), Colors[2]);
-                    Debug.Log(answer);
+                    Debug.LogFormat("[Multicolored Digits #{0}] The answer for stage 3 is {1}.", _moduleId, answer);
 
                 }
                 else if (Stage == 3)
@@ -269,7 +267,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
 
                     }
                     answer = QuestionMark(DigitDisplay4[0].text + DigitDisplay4[1].text + DigitDisplay4[2].text + DigitDisplay4[3].text + DigitDisplay4[4].text + DigitDisplay4[5].text);
-                    Debug.Log(answer);
+                    Debug.LogFormat("[Multicolored Digits #{0}] The answer for stage 4 is {1}.", _moduleId, answer);
                 }
                 else if (Stage == 4)
                 {
@@ -281,6 +279,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
                        DigitDisplay4[i].gameObject.SetActive(false);
                     }
  
+                    Debug.LogFormat("[Multicolored Digits #{0}] Module Solved!", _moduleId);
                     
                 }
 
@@ -288,6 +287,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
             else
             {
                 Module.HandleStrike();
+                Debug.LogFormat("[Multicolored Digits #{0}] Incorrect answer: {1}", _moduleId, Display.text);
                 Display.text = "";
 
             }
@@ -298,9 +298,11 @@ public class MulticoloredDigitsScript : MonoBehaviour
 
     string tableone(string n, string c)
     {
-        int full = Int32.Parse(n.Replace('?', '0'));
+        string answer = n;
         for (int i = 0; i < n.Length; i++)
         {
+
+            int full = Int32.Parse(n.Replace('?', '0'));
             if (n[i] == '?')
             {
                 continue;
@@ -351,10 +353,9 @@ public class MulticoloredDigitsScript : MonoBehaviour
             else if (col == 'A')
             {
                 int sum = 0;
-                Debug.Log("full of shit:" + full);
                 while (full != 0)
                 {
-                    sum = ((full % 10) + sum) % 10;
+                    sum = (full % 10) + sum;
                     full = (full / 10);
                     
                 }
@@ -363,12 +364,14 @@ public class MulticoloredDigitsScript : MonoBehaviour
                 number = (number * sum) % 10;
             }
 
-            n = n.Remove(i, 1);
-            n = n.Insert(i, number.ToString());
+            answer = answer.Remove(i, 1);
+            answer = answer.Insert(i, number.ToString());
 
         }
-        Debug.Log("This is n: " + n);
-        return n;
+
+
+
+        return answer;
         
     }
 
