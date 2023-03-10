@@ -173,7 +173,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
         Debug.Log("The row is " + beforesum);
         Debug.Log("The column is " + aftersum);
         
-            int replaceddigit = TheTable[beforesum][aftersum];
+            int replaceddigit = TheTable[beforesum][aftersum] % 10;
             
             Colors[3] = Colors[3].Remove(position, 1);
             Colors[3] = Colors[3].Insert(position, "ARGYBWMCOP"[beforesum].ToString());
@@ -354,7 +354,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
                 Debug.Log("full of shit:" + full);
                 while (full != 0)
                 {
-                    sum = (full % 10) + sum;
+                    sum = ((full % 10) + sum) % 10;
                     full = (full / 10);
                     
                 }
