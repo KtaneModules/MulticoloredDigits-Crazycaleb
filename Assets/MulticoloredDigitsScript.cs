@@ -30,6 +30,9 @@ public class MulticoloredDigitsScript : MonoBehaviour
     int Stage = 1;
     string answer = "";
     string after = "";
+    string answerfornow = "";
+    int position = -1;
+    string Num4 = "";
 
     private int _moduleId;
     private static int _moduleIdCounter = 1;
@@ -62,6 +65,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
 
 
         Debug.LogFormat("[Multicolored Digits #{0}] Stage 1's colors are {1}", _moduleId, Colors[0]);
+        Debug.LogFormat("[Multicolored Digits #{0}] Stage 1's digits are {1}", _moduleId, Digits[0]);
 
         // Stage 1 above 
 
@@ -77,6 +81,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
         }
 
         Debug.LogFormat("[Multicolored Digits #{0}] Stage 2's colors are {1}", _moduleId, Colors[1]);
+        Debug.LogFormat("[Multicolored Digits #{0}] Stage 2's digits are {1}", _moduleId, Digits[1]);
 
         // Stage 2 above
 
@@ -94,16 +99,20 @@ public class MulticoloredDigitsScript : MonoBehaviour
         }
 
         Debug.LogFormat("[Multicolored Digits #{0}] Stage 3's colors are {1}", _moduleId, Colors[2]);
+        Debug.LogFormat("[Multicolored Digits #{0}] Stage 3's digits are {1}", _moduleId, Digits[2]);
 
         // Stage 3 above 
 
         Digits[3] = Rnd.Range(0, 1000000);
 
-        string Num4 = Digits[3].ToString("000000");
+        Num4 = Digits[3].ToString("000000");
 
         int question = Rnd.Range(0, 6);
         Num4 = Num4.Remove(question, 1);
         Num4 = Num4.Insert(question, "?");
+       /* string real = Num4.Replace("?", "0");
+        Num4 = real; */
+
 
         for (int i = 0; i < 6; i++)
         {
@@ -116,25 +125,27 @@ public class MulticoloredDigitsScript : MonoBehaviour
         }
 
         Debug.LogFormat("[Multicolored Digits #{0}] Stage 4's colors are {1}", _moduleId, Colors[3]);
+        Debug.LogFormat("[Multicolored Digits #{0}] Stage 4's digits are {1}", _moduleId, Num4);
 
-        after = tableone(Num4, Colors[3]);
+        after = tableone(Num4, Colors[3], false);
 
 
 
-        answer = tableone(Num, Colors[0]);
+        answer = tableone(Num, Colors[0], false);
         Debug.LogFormat("[Multicolored Digits #{0}] The answer for stage 1 is {1}.", _moduleId, answer);
 
 
     }
     string QuestionMark(string before)
     {
+        
         int p = BombInfo.GetPortCount();
         int i = ((2 * BombInfo.GetOnIndicators().Count()) + BombInfo.GetOffIndicators().Count());
         int b = BombInfo.GetBatteryCount();
         int[][] TheTable = new int[][]
         {
             new int[] {0 + 0, 1 + i, 0 - b, 0 * 0, p + p, 0 - b, i * i, i + p, b - i, p * b},
-            new int[] {i + 0, i + b, 2 - 1, b * i, i + i, i - 5, i * p, b + 7, 7 - p, b * p},
+            new int[] {i + 0, i + b, 2 - 1, b * i, i + i, i - 5, i * p, b + 7, 8 - p, b * p},
             new int[] {0 - b, p - 1, 2 * p, 3 + 3, p - 4, i * 5, i + 2, 2 - i, b * 8, i + 9},
             new int[] {i * i, 1 * b, 2 + i, p - b, p * b, 5 + b, p - b, 7 * i, i + 8, b - 3},
             new int[] {b + 4, i + i, p - i, i * b, b + p, b - p, p * b, 4 + 7, p - 8, i * 9},
@@ -147,7 +158,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
 
         int beforesum = 0;
         int aftersum = 0;
-        int position = -1;
+        
         for (int j = 0; j < 6; j++)
         {
             if (before[j] == '?')
@@ -182,7 +193,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
 
         Debug.LogFormat("[Multicolored Digits #{0}] The color of the question mark is {1}", _moduleId, Colors[3][position]);
 
-            return tableone(before, Colors[3]);
+            return tableone(before, Colors[3], true);
         
     }
        
@@ -229,7 +240,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
                         }
 
                     }
-                    answer = tableone(Digits[1].ToString("0000"), Colors[1]);
+                    answer = tableone(Digits[1].ToString("0000"), Colors[1], false);
                     Debug.LogFormat("[Multicolored Digits #{0}] The answer for stage 2 is {1}.", _moduleId, answer);
                 }
                 else if (Stage == 2)
@@ -247,7 +258,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
                         }
 
                     }
-                    answer = tableone(Digits[2].ToString("00000"), Colors[2]);
+                    answer = tableone(Digits[2].ToString("00000"), Colors[2], false);
                     Debug.LogFormat("[Multicolored Digits #{0}] The answer for stage 3 is {1}.", _moduleId, answer);
 
                 }
@@ -266,8 +277,12 @@ public class MulticoloredDigitsScript : MonoBehaviour
                         }
 
                     }
+                    Debug.Log("Num 4: " + Num4);
+                    answerfornow = tableone(Num4, Colors[3], false);
+                    Debug.Log("Answer for now: " + answerfornow);
                     answer = QuestionMark(DigitDisplay4[0].text + DigitDisplay4[1].text + DigitDisplay4[2].text + DigitDisplay4[3].text + DigitDisplay4[4].text + DigitDisplay4[5].text);
                     Debug.LogFormat("[Multicolored Digits #{0}] The answer for stage 4 is {1}.", _moduleId, answer);
+                    
                 }
                 else if (Stage == 4)
                 {
@@ -296,13 +311,26 @@ public class MulticoloredDigitsScript : MonoBehaviour
     }
 
 
-    string tableone(string n, string c)
+    string tableone(string n, string c, bool b)
     {
         string answer = n;
         for (int i = 0; i < n.Length; i++)
         {
 
             int full = Int32.Parse(n.Replace('?', '0'));
+
+            if (b && i != position)
+            {
+                answer = answer.Remove(i, 1);
+                answer = answer.Insert(i, answerfornow[i].ToString());
+                continue;
+            }
+
+            if (b && i == position)
+            {
+                Debug.Log("Hello it worked :D");
+            }
+
             if (n[i] == '?')
             {
                 continue;
