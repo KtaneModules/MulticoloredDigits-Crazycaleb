@@ -421,6 +421,13 @@ public class MulticoloredDigitsScript : MonoBehaviour
         return -1;
     }
 
+    bool validNumbers (string c)
+    {
+        string[] valids = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+
+        return valids.Contains(c);
+    }
+
 #pragma warning disable 414
     private readonly string TwitchHelpMessage = @"Use !{0} input 0123456789 to input your answer. || !{0} clear to clear your input. || !{0} submit to submit your answer.";
 #pragma warning restore 414
@@ -440,26 +447,19 @@ public class MulticoloredDigitsScript : MonoBehaviour
                 yield return "sendtochaterror Please input your numbers!";
                 yield break;
             }
-            else if (!split[1].Any(x => "0123456789".Contains(x)))
+            else if (!validNumbers(split[1]))
             {
-                yield return "sendtochaterror What you inputted doesn't contain any valid numbers!";
+                var invalids = split[1].Where(x => !"0123456789".Contains(x)).ToArray();
+
+                yield return string.Format("{0} {1}", invalids.Join(", "), invalids.Count() > 1 ? "are not valid numbers!" : "is not an valid number!");
                 yield break;
             }
+
             else if (split[1].Length > StageIx(Stage - 1) || Display.text.Length == StageIx(Stage - 1))
             {
                 yield return string.Format("sendtochaterror You cannot input more than {0} numbers!", StageIx(Stage - 1));
                 yield break;
             }
-
-            var numsToPress = split[1].Select(x => "0123456789".IndexOf(x)).ToArray();
-
-            foreach (var num in numsToPress)
-            {
-                buttonage[num].OnInteract();
-                yield return new WaitForSeconds(0.1f);
-            }
-            
-            yield break;
         }
 
         if (split[0].EqualsIgnoreCase("CLEAR"))
@@ -482,9 +482,15 @@ public class MulticoloredDigitsScript : MonoBehaviour
 
         var ix = Stage - 1;
 
+        if (Display.text.Length > 0)
+        {
+            clear.OnInteract();
+            yield return new WaitForSeconds(0.1f);
+        }
+
         while (ix != 4)
         {
-            var answers = answer.Select(x => "0123456789".IndexOf(x)).ToArray();
+            var answers = answer.Select(x => "0123456789".IndexOf(x)).ToList();
 
             foreach (var num in answers)
             {
