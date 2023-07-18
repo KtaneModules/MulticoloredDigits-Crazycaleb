@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using Rnd = UnityEngine.Random;
 using KModkit;
@@ -422,7 +421,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
     }
 
 #pragma warning disable 414
-    private readonly string TwitchHelpMessage = @"Use !{0} input 0123456789 to input your answer. || !{0} clear to clear your input. || !{0} submit to submit your answer.";
+    private readonly string TwitchHelpMessage = @"Use !{0} submit 0123456789 to submit your answer.";
 #pragma warning restore 414
 
 
@@ -432,52 +431,34 @@ public class MulticoloredDigitsScript : MonoBehaviour
 
         string[] split = command.ToUpperInvariant().Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
-        if (split[0].EqualsIgnoreCase("INPUT"))
+        if (split[0].EqualsIgnoreCase("SUBMIT"))
         {
-            
-            if (split.Length == 1)
+            if (split.Length == 1 || split.Length > 2)
             {
-                yield return "sendtochaterror Please input your numbers!";
-                yield break;
-            }
-            else if (!"0123456789".Contains(split[1]))
-            {
-                var invalids = split[1].Where(x => !"0123456789".Contains(x)).ToArray();
-
-                yield return string.Format("sendtochaterror {0} {1}", invalids.Join(", "), invalids.Count() > 1 ? "are not valid numbers!" : "is not an valid number!");
                 yield break;
             }
 
-            else if (split[1].Length > StageIx(Stage - 1) || Display.text.Length == StageIx(Stage - 1))
+            var check = split[1].Select(x => "0123456789".IndexOf(x)).ToArray();
+
+            if (check.Any(x => x < 0))
             {
-                yield return string.Format("sendtochaterror You cannot input more than {0} numbers!", StageIx(Stage - 1));
                 yield break;
             }
 
-            var numsToPress = split[1].Select(x => "0123456789".IndexOf(x)).ToList();
+            var numsToPress = split[1].Select(x => Int32.Parse(x.ToString())).ToList();
+
+            if (Display.text.Length > 0)
+            {
+                clear.OnInteract();
+                yield return null;
+            }
 
             foreach (var num in numsToPress)
             {
                 buttonage[num].OnInteract();
                 yield return new WaitForSeconds(0.1f);
             }
-
-            yield break;
-
-        }
-
-
-        if (split[0].EqualsIgnoreCase("CLEAR"))
-        {
-            clear.OnInteract();
-            yield return new WaitForSeconds(0.1f);
-            yield break;
-        }
-
-        if (split[0].EqualsIgnoreCase("SUBMIT"))
-        {
             submit.OnInteract();
-            yield return new WaitForSeconds(0.1f);
         }
     }
 
@@ -495,7 +476,7 @@ public class MulticoloredDigitsScript : MonoBehaviour
 
         while (ix != 4)
         {
-            var answers = answer.Select(x => "0123456789".IndexOf(x)).ToList();
+            var answers = answer.Select(x => Int32.Parse(x.ToString())).ToList();
 
             foreach (var num in answers)
             {
